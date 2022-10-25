@@ -4,10 +4,6 @@ import psycopg2
 from dotenv import load_dotenv
 import os 
 
-#path= '/home/raul/FactoriaF5/p3_mascotas/app'
-
-#dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-#print(dotenv_path)
 load_dotenv()
 
 print(os.getenv("USERNAME_DB"))
