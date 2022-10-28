@@ -1,0 +1,424 @@
+openapi: 3.0.3
+info:
+  title: API protectora de MAIscotas
+  description: |-
+    Esta API se encarga de gestionar la base de datos de la protectora MAIscotas
+    En cada una de las tablas podemos ver, modificar, añadir y eliminar los registros de especies, mascotas y usuarios.
+    En los verbos delete y put de cada endpoint tenemos la opción para clasificarlos es el id.
+  version: 1.0.11
+servers:
+  - url: http://localhost:8000/
+tags:
+  - name: users
+    description: Este endpoint maneja todo la información de usuarios de nuestra API
+  - name: especies
+    description: Este endpoint maneja todo la información de las especies de nuestra API
+  - name: mascotas
+    description: Este endpoint maneja todo la información de mascotas de nuestra API
+paths:
+  /users:
+    get:
+      tags:
+        - users
+      summary: Visualizar todos los usuarios
+      description: Visualización de todos los datos de los usuarios
+      operationId: findUsers
+      responses:
+        '200':
+          description: Petición con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/user' 
+    post:
+      tags:
+        - users
+      summary: Crear usuario nuevo
+      description: Crear usuario nuevo.
+      operationId: createUser
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+      responses:
+        '200':
+          description: ¡Usuario creado!
+        '400':
+          description: Invalido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+  /user/{Id_usuario}:
+    get:
+      tags:
+        - users
+      summary: Visualizar todos los usuarios
+      description: Visualización de todos los datos de los usuarios
+      operationId: getUsersID
+      parameters:
+        - name: Id_usuario
+          in: path
+          description: usuario ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Petición con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/user' 
+    delete:
+      tags:
+        - users
+      summary: Borrar un usuario por el ID
+      description: Borrar un usuario
+      operationId: deleteUser
+      parameters:
+        - name: Id_usuario
+          in: path
+          description: usuario ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: ¡Eliminado con éxito!
+        '400':
+          description: Invalido
+    put:
+      tags:
+        - users
+      summary: Actualización de Usuarios
+      description: Actualización de usuarios ya creados
+      operationId: updateUser
+      parameters:
+        - name: Id_usuario
+          in: path
+          description: Id_usuario para buscar
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Actualización de información de usuarios
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+      responses:
+        '200':
+          description: ¡Actualizado con éxito!
+        '400':
+          description: Inválido
+  /user/count:
+    get:
+      tags:
+        - users
+      summary: Visualizar todos los usuarios
+      description: cuenta los numeros de usuarios de la tabla
+      operationId: findUserCount
+      responses:
+        '200':
+          description: Petición con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/user' 
+  /especies:
+    get:
+      tags:
+        - especies
+      summary: Visualizar todas las especies
+      description: Visualización de todos los datos de las especies registradas
+      operationId: findEspecies
+      responses:
+        '200':
+          description: Petición con éxito
+        '400':
+          description: Inválido
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/especies'
+    post:
+      tags:
+        - especies
+      summary: Insertar nueva especie
+      description: Inserta nueva especie.
+      operationId: createEspecies
+      requestBody:
+        description: Crear nueva especie
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/especies'
+      responses:
+        '200':
+          description: ¡Especie creada!
+        '400':
+          description: Inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/especies'
+  /especies/{Id_especies}:
+    delete:
+      tags:
+        - especies
+      summary: Borrar una especie
+      description: Borrar una especie filtrando por id
+      operationId: deleteEspecie
+      parameters:
+        - name: Id_especies
+          in: path
+          description: La especie que queremos eliminar
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: ¡Eliminado con éxito!
+        '400':
+          description: Invalido
+    put:
+      tags:
+        - especies
+      summary: Actualización de especies
+      description: Actualización de especies ya creadas filtradas por el ID
+      operationId: updateEpecies
+      parameters:
+        - name: Id_especies
+          in: path
+          description: ID de la especie que necesitamos actualizar
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Actualización de información de las especies
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/especies'
+      responses:
+        '200':
+          description: ¡Actualizado con éxito!
+        '400':
+          description: Inválido
+  /especies/count:
+    get:
+      tags:
+        - especies
+      summary: Visualizar todas las especies
+      description: cuenta los numeros de especies de la tabla
+      operationId: findEspeciesCount
+      responses:
+        '200':
+          description: Petición con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/especies' 
+  /mascotas:
+    get:
+      tags:
+        - mascotas
+      summary: Visualizar todas las mascotas
+      description: Visualización de todos los datos de las mascotas ya registradas
+      operationId: findMascotas
+      responses:
+        '200':
+          description: Petición con éxito
+        '400':
+          description: Inválido
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/mascotas'
+    post:
+      tags:
+        - mascotas
+      summary: Insertar nueva mascota
+      description: Inserta nueva mascota.
+      operationId: createMascota
+      requestBody:
+        description: Crear nueva mascota con todos los campos
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/mascotas'
+      responses:
+        '200':
+          description: ¡Mascota creada!
+        '400':
+          description: Invalido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mascotas'
+  /mascotas/{Id_animalito}:
+    get:
+      tags:
+        - mascotas
+      summary: Visualizar todos los datos de las mascotas
+      description: Visualización de datos de mascotas filtrados por id
+      operationId: getMascotasID
+      parameters:
+        - name: Id_animalito
+          in: path
+          description: mascotas id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Petición con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/mascotas' 
+    delete:
+      tags:
+        - mascotas
+      summary: Borrar una mascota
+      description: Borrar una mascota encontrándola por ID
+      operationId: deleteMascota
+      parameters:
+        - name: Id_animalito
+          in: path
+          description: La mascota que queremos eliminar
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: ¡Eliminado con éxito!
+        '400':
+          description: Invalido
+    put:
+      tags:
+        - mascotas
+      summary: Actualización de mascotas
+      description: Actualización de mascotas ya creadas y filtrado por ID
+      operationId: updateMascotas
+      parameters:
+        - name: Id_animalito
+          in: path
+          description: Id del animalito que necesitamos actualizar
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Actualización de información de las mascotas
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/mascotas'
+      responses:
+        '200':
+          description: ¡Actualizado con éxito!
+        '400':
+          description: Inválido
+  /mascotas/count:
+    get:
+      tags:
+        - mascotas
+      summary: Visualizar el numero de mascotas
+      description: cuenta los numeros de mascotas de la tabla
+      operationId: findMascotaCount
+      responses:
+        '200':
+          description: Petición con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/mascotas'
+
+components:
+  schemas:
+    user:
+      type: object
+      properties:
+        Id_usuario:
+          type: integer
+          format: int64
+        Nombre:
+          type: string
+        Apellidos:
+          type: string
+        Domicilio:
+          type: string
+        Tfno_contacto:
+          type: integer
+        Acogida:
+          type: boolean
+          example: True
+        Adopción:
+          type: boolean
+          example: False
+        Entrevista:
+          type: boolean
+          example: NO
+        Id_animalito:
+          type: integer
+    especies:
+      type: object
+      properties:
+        Id_especie:
+          type: integer
+          format: int64
+        especie:
+          type: string
+          example: Felino
+    mascotas:
+      type: object
+      properties:
+        Id_animalito:
+          type: integer
+          format: int64
+        Nombre_animalito:
+          type: string
+        Lugar:
+          type: string
+        Vacunado:
+          type: boolean
+          example: False
+        Castrado:
+          type: boolean
+          example: True
+        Edad:
+          type: integer
+          format: int64
+        Peso:
+          type: number
+          example: 3,59
+        Disponible:
+          type: boolean
+          example: true
+        Id_especie: 
+          type: integer
+        
