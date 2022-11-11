@@ -1,66 +1,93 @@
-from fastapi import APIRouter
-from config.db import conn
-from models.user import users
-from schemas.user import User, UserCount
 from typing import List
-from starlette.status import HTTP_204_NO_CONTENT
-from sqlalchemy import func, select
 
 from cryptography.fernet import Fernet
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
+from starlette.status import HTTP_204_NO_CONTENT
 
-user = APIRouter()
+from config.depy import get_db
+from models.pets import Usuario
+from schemas.user import User, UserCount
+
+router = APIRouter()
+
 key = Fernet.generate_key()
 f = Fernet(key)
+    
+####----------------CRUD Funcions on USERS--------------------------#####
 
-
-@user.get(
-    "/users",
-    tags=["users"],
+@router.get("/",
     response_model=List[User],
     description="Get a list of all users",
 )
-async def get_users():
-    return conn.execute(users.select()).fetchall()
+async def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    result = []
+    try:
+        result = db.query(Usuario).offset(skip).limit(limit).all()
+    except:
+        #En caso de que no se pueda ejecutar la transacción hago rollback de la transacción y lanzo HttpException
+        raise HTTPException(status_code=404, detail="Users not found")
+    return result
 
 
-@user.get("/users/count", tags=["users"], response_model=UserCount)
-async def get_users_count():
-    result = conn.execute(select([func.count()]).select_from(users))
+@router.get("/", response_model=UserCount)
+async def get_users_count(db: Session = Depends(get_db)):
+    result = db.execute(select([func.count()]).select_from(Usuario))
     return {"total": tuple(result)[0][0]}
 
 
-@user.get(
-    "/users/{id}",
-    tags=["users"],
+@router.get(
+    "/{id}",
     response_model=User,
     description="Get a single user by Id",
 )
-async def get_user(id: str):
-    return conn.execute(users.select().where(users.c.id == id)).first()
+async def get_user(id: str, db: Session = Depends(get_db)):
+    return db.execute(Usuario.select().where(Usuario.c.id_user == id)).first()
 
 
-@user.post("/", tags=["users"], response_model=User, description="Create a new user")
-async def create_user(user: User):
+@router.post("/",
+    response_model=User,
+    description="Create a new user",
+)
+async def create_user(user: User, db: Session = Depends(get_db)):
+    #print(**user.dict())
+    #db_user= Usuario(id_user=user.id_user, **user.dict())
+    #user = user.dict()
+    db_user = Usuario(name=user.name, email=user.email, password=f.encrypt(user.password.encode("utf-8")))
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+''' 
     new_user = {"name": user.name, "email": user.email}
     new_user["password"] = f.encrypt(user.password.encode("utf-8"))
-    result = conn.execute(users.insert().values(new_user))
-    #print(f"holaaa:{result.inserted_primary_key[0]}")
-    return conn.execute(users.select().where(users.c.id == result.inserted_primary_key[0])).first()
+    result = db.execute(users.insert().values(new_user))
+    db.commit()
+    print(f"primary_key:{result.inserted_primary_key[0]}")
+    print(f"id_user:{users.c.id_user}")
+    res = db.execute(users.select().where(users.c.id_user == result.inserted_primary_key[0])).first()
+    return res
+'''
 
 
-@user.put(
-    "/users/{id}", tags=["users"], response_model=User, description="Update a User by Id"
+@router.put(
+    "/{id}", response_model=User, description="Update a User by Id"
 )
-async def update_user(user: User, id: int):
-    conn.execute(
-        users.update()
+async def update_user(user: User, id: int, db: Session = Depends(get_db)):
+    db.execute(
+        Usuario.update()
         .values(name=user.name, email=user.email, password=user.password)
-        .where(users.c.id == id)
+        .where(Usuario.c.id_user == id)
     )
-    return conn.execute(users.select().where(users.c.id == id)).first()
+    db.commit()
+    result = db.execute(Usuario.select().where(Usuario.c.id_user == id)).first()
+    return result
 
 
-@user.delete("/{id}", tags=["users"], status_code=HTTP_204_NO_CONTENT)
-async def delete_user(id: int):
-    conn.execute(users.delete().where(users.c.id == id))
-    return conn.execute(users.select().where(users.c.id == id)).first()
+@router.delete("/{id}", status_code=HTTP_204_NO_CONTENT)
+async def delete_user(id: int, db: Session = Depends(get_db)):
+    db.execute(Usuario.delete().where(Usuario.c.id_user == id))
+    db.commit()
+    result = db.execute(Usuario.select().where(Usuario.c.id_user == id)).first()
+    return result
