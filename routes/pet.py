@@ -25,7 +25,7 @@ async def get_pets(skip: int = 0, limit: int = 100, db: Session = Depends(get_db
     return result
 
 
-@router.get("/", response_model=PetCount)
+@router.get("/count", response_model=PetCount)
 async def get_pets_count(db: Session = Depends(get_db)):
     result = db.execute(select([func.count()]).select_from(Pet))
     return {"total": tuple(result)[0][0]}

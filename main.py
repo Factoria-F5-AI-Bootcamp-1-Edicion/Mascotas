@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from routes.api_router import api_router
+from config.db import engine
+from models import pets
 #from config.openapi import tags_metadata
+
+pets.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Mascotas API",

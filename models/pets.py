@@ -15,6 +15,8 @@ class Usuario(Base):
     email = Column(String, unique=True, index=True)
     password = Column(String)
 
+    #pets_from_users = relationship("Mascotas_especificas")
+
 class Mascotas_especificas(Base):
     __tablename__ = "pets"
 
@@ -25,10 +27,8 @@ class Mascotas_especificas(Base):
     edad = Column(Integer, index=True)
     edad = Column(Integer, index=True)
     enfermedad = Column(String, unique=True, index=True)
-    id_species = Column(Integer, ForeignKey("id_species"))
-    id_user = Column(Integer, ForeignKey("id_user"))
-
-    mascotas_especificas = relationship("pets")
+    #id_species = Column(Integer, ForeignKey("species.id_species"))
+    #id_user = Column(Integer, ForeignKey("users.id_user"))
 
 class Especies(Base):
     __tablename__ = "species"
@@ -36,6 +36,4 @@ class Especies(Base):
     id_species = Column(Integer, primary_key=True, index=True)
     especies = Column(String, unique=True, index=True)
 
-print("Creando tablas")
-meta.create_all(engine)
-print("Creando tablas despues")
+    #pets_from_species = relationship("Mascotas_especificas")

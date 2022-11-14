@@ -11,7 +11,7 @@ from schemas.species import Species, SpeciesCount
 
 router = APIRouter()
    
-####----------------CRUD Funcions on USERS--------------------------#####
+####----------------CRUD Funcions on SPECIES-------------------------#####
 
 @router.get("/",
     response_model=List[Species],
@@ -27,7 +27,7 @@ async def get_species(skip: int = 0, limit: int = 100, db: Session = Depends(get
     return result
 
 
-@router.get("/", response_model=SpeciesCount)
+@router.get("/count", response_model=SpeciesCount)
 async def get_users_count(db: Session = Depends(get_db)):
     result = db.execute(select([func.count()]).select_from(Species))
     return {"total": tuple(result)[0][0]}

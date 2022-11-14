@@ -15,7 +15,7 @@ router = APIRouter()
 key = Fernet.generate_key()
 f = Fernet(key)
     
-####----------------CRUD Funcions on USERS--------------------------#####
+####----------------CRUD Funcions on USER--------------------------#####
 
 @router.get("/",
     response_model=List[User],
@@ -26,12 +26,12 @@ async def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_d
     try:
         result = db.query(Usuario).offset(skip).limit(limit).all()
     except:
-        #En caso de que no se pueda ejecutar la transacción hago rollback de la transacción y lanzo HttpException
+        #En caso de que no se pueda ejecutar la transacción lanzo HttpException
         raise HTTPException(status_code=404, detail="Users not found")
     return result
 
 
-@router.get("/", response_model=UserCount)
+@router.get("/count", response_model=UserCount)
 async def get_users_count(db: Session = Depends(get_db)):
     result = db.execute(select([func.count()]).select_from(Usuario))
     return {"total": tuple(result)[0][0]}
@@ -51,7 +51,7 @@ async def get_user(id: str, db: Session = Depends(get_db)):
     description="Create a new user",
 )
 async def create_user(user: User, db: Session = Depends(get_db)):
-    #print(**user.dict())
+    print(user.dict())
     #db_user= Usuario(id_user=user.id_user, **user.dict())
     #user = user.dict()
     db_user = Usuario(name=user.name, email=user.email, password=f.encrypt(user.password.encode("utf-8")))
