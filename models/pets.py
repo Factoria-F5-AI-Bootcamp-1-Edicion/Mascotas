@@ -25,10 +25,13 @@ class Mascotas_especificas(Base):
     vacunado = Column(Boolean, default=True)
     castrado = Column(Boolean, default=True)
     edad = Column(Integer, index=True)
-    edad = Column(Integer, index=True)
     enfermedad = Column(String, unique=True, index=True)
-    #id_species = Column(Integer, ForeignKey("species.id_species"))
-    #id_user = Column(Integer, ForeignKey("users.id_user"))
+    
+    #id_user = Column(Integer, ForeignKey("Usuario.id_user"))
+    #adoptantes = relationship("Usuario", back_populates="pets_from_users")
+
+    #id_species = Column(Integer, ForeignKey("Especies.id_species"))
+    #especies = relationship("Especies", back_populates="pets_from_species")
 
 class Especies(Base):
     __tablename__ = "species"
