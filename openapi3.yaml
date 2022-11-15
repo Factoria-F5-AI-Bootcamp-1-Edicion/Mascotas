@@ -1,10 +1,71 @@
 openapi: 3.0.3
 info:
-  title: API protectora de MAIscotas
+  title: API Protectora de mAIscotas
   description: |-
-    Esta API se encarga de gestionar la base de datos de la protectora MAIscotas
+    Esta API se encarga de gestionar la base de datos de la Protectora mAIscotas.
     En cada una de las tablas podemos ver, modificar, añadir y eliminar los registros de especies, mascotas y usuarios.
-    En los verbos delete y put de cada endpoint tenemos la opción para clasificarlos es el id.
+    En los verbos delete y put de cada endpoint tenemos la opción para clasificarlos con {id}.
+    - Tecnologías usadas :
+      - Organización del trabajo: Implementación de Scrum --> Jira.
+          - Raúl Muñoz: Product Owner.
+          - Javier Inglés: Scrum Master.
+          - Begoña Ortiz: Desarrolladora.
+          - Mayra Espinoza: Desarrolladora.
+          - Ana de Córdoba: Desarrolladora-documentación.
+      - Repositorio: Github
+          - Rama main: Versión final del proyecto.
+          - Rama dev: Versiones provisionales del proyecto.
+          - Rama documentación: rama dedicada a la actualización de la documentación.
+      - Esquema uml: dbdiagram
+      - BBDD : postgres-psycopg2
+      - Framework : fastapi
+      - Sistema ORM (modelo de programación que permite mapear las estructuras de una base de datos relacional y no relacional): sqlalchemy 
+      - Testing : libreria pydantic/pytest.
+      - Datos sensibles externalizados: python-dotenv y .env
+      - Encriptación de datos sensibles: crytography.fernet
+      - Documentación: swagger.io
+    - Estructura proyecto:
+      - Carpeta config: Configuración de toda la BBDD.
+      - Carpeta models: Modelos y clases de las entidades.
+      - Carpeta routes: Sistema de ruta de toda la API.
+      - Carpeta schemas: Archivos con los esquemas de las entidades.
+      - .gitignore: Datos externalizados con .env.
+      - requirements.txt: Requerimientos del proyecto.
+    
+    - Funcionamiento de la API:
+      - 1.º- Externalización datos sensibles:
+        - Archivo __.env__ con toda la información de la conexión de la BBDD, se ubica en la carpeta config, *en el archivo .gitignore se llama para que omita y no se suba al repositorio*, en él se guarda toda la información confidencial del proyecto.
+        
+      - 2.º- Carpeta __Config__: Conexión de API con BBDD en el servidor con sqlalchemy:
+        - Archivo __db.py__ guardado en la carpeta config del repositorio.
+          - Creación de una __URL__ para establecer la conexión.
+          - Creación variable __engine__: conexión con la BBDD y se especifica lenguaje sqlalchemy y se llama la variable de la URL.
+          - Variable __meta__ para los metadatos.
+          - __SessionLocal__: establecer la sesión para realizar las transacciones a la base de datos,para poder abrir y cerrar en cada petición.
+          - Función __declarative_base__: Construye una clase base para definiciones de clases declarativas.
+      - 3.º- Carpeta __Models__:
+        - Archivo: __pets.py__; creación de entidades con las variables. Están declaradas en el apartado de la documentación "components/schemas/", esquematizadas en el UML.
+              - Especie.
+              - Usuarios.
+              - Mascotas especificas.
+      - 4.º- Carpeta __routes__: en la que se guardan todas las rutas del programa.
+        - Archivo __api_router.py__: se especifican todas las rutas al CRUD de cada entidad.
+        - Archivo __pet.py__: se especifica todo el CRUD de esta mascotas especificas.
+        - Archivo __species.py__: se especifica el CRUD de la tabla especies.
+        - Archivo __user.py__: se especifica el CRUD de la tabla de usuarios.
+        - Dentro de estos archivos se llama la variable principal, router = APIRouter().
+      - 5.º- Carpeta __Schemas__: en la que guardamos las clases definidas.
+        - Archivo __pet.py__: Declaración de la tabla de mascotas.
+          - class pet: todo lo relacionado con los datos de la mascota.
+          - class Pet_count: el número de registros introducido.
+        - Archivo __species.py__: Declaración de la tabla de especies.
+          - class Species: todo lo relacionado con los datos de las especies.
+          - class Species_count: El número de registros introducidos en especies.
+        - Archivo __User.py__: Declaración de la tabla de usuarios.
+          - class User: Todo lo relacionado con los datos de los usuarios.
+          - class UserCount: El número de registros introducidos en usuarios.
+      - 6.º- Archivo __main.py__:
+        - Archivo principal en el que se ejecuta toda la aplicación.
   version: 1.0.11
 servers:
   - url: http://localhost:8000/
