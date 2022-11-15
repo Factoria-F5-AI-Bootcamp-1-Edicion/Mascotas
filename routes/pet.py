@@ -73,9 +73,11 @@ async def update_pet(pet: Pet, id: int, db: Session = Depends(get_db)):
     try:
         db_row = db.query(Mascotas_especificas).filter(Mascotas_especificas.id_user == id).first()
         if db_row:
-            db_row.name = pet.name
-            db_row.email = pet.email
-            db_row.password = get_key_crypto().encrypt(pet.password.encode("utf-8"))
+            name_animalito=pet.name_animalito, 
+            vacunado=pet.vacunado, 
+            castrado=pet.castrado, 
+            edad=pet.edad, 
+            enfermedad=pet.enfermedad,
             updated_row = db.merge(db_row)        # Usamos merge para modificar los datos de una fila
             print(updated_row)
             db.commit()
